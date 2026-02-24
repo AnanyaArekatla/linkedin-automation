@@ -1,0 +1,205 @@
+{
+  "name": "class 1",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1ntgyMWw8xowT7aLvTXoaYapl5PJwv9xlrGO_mnVy0gw",
+          "mode": "list",
+          "cachedResultName": "Social media workflow",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ntgyMWw8xowT7aLvTXoaYapl5PJwv9xlrGO_mnVy0gw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ntgyMWw8xowT7aLvTXoaYapl5PJwv9xlrGO_mnVy0gw/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bfe94400-63d5-4769-997d-11d7cd266992",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "ds4LW4KXwIth7tOg",
+          "name": "Google Sheets Trigger account 2766"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Add a unique hook line at the beginning\nSystem: \"You are a social media strategist with expertise in content adaptation\"\n\n  User: \"Analyze this article and create a summary that:\n  1. Captures the 3 most important insights\n  2. Includes any actionable advice or tips\n  3. Maintains the original tone and perspective\n  4. Highlights implications for the target audience\n  5. Stays under 200 words for social medi {{ $json.newslinks }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        224,
+        0
+      ],
+      "id": "f3c7711c-5d93-469e-a72e-dfa63be09850",
+      "name": "Summarize articles"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        296,
+        224
+      ],
+      "id": "3c83d58a-6dd8-4a80-9050-2debd50878d3",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "LLLf9CzqZ6RUIuds",
+          "name": "Google Gemini(PaLM) Api account 6956"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=System: \"You are a social media strategist with expertise in content adaptation\"\n\n  User: \"Analyze this article and create a summary that:\n  1. Captures the 3 most important insights\n  2. Includes any actionable advice or tips\n  3. Maintains the original tone and perspective\n  4. Highlights implications for the target audience\n  5. Stays under 200 words for social media adaptation\n  \n  Article {{ $json.text }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        576,
+        0
+      ],
+      "id": "225f75c1-3d79-4690-9eb4-ee6aa946fdb3",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        648,
+        224
+      ],
+      "id": "d1e9aade-6774-4d40-aaf5-5c05f65bf2c7",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "LLLf9CzqZ6RUIuds",
+          "name": "Google Gemini(PaLM) Api account 6956"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "person": "Kl98sBVuzs",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        928,
+        0
+      ],
+      "id": "54e14bd8-5ecf-45e6-bb11-b3772ec4c043",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "90GoXFtS8sIcDkZv",
+          "name": "LinkedIn account 1983"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Summarize articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarize articles",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize articles": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9f2896ab-c062-4038-8349-dc4b04007cfd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "id": "LC69lMBblorpXviy",
+  "tags": []
+}
